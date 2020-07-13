@@ -1,0 +1,54 @@
+<!DOCTYPE html >
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>商品页面</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+</head>
+<body>
+    <button class="layui-btn" onclick="window.location.href='/cart'">转到购物车</button>
+    <table id="goods"></table>
+</body>
+<script src="/static/layui/layui.js"></script>
+<script src="/static/jquery/jquery-2.1.1.min.js"></script>
+<script>
+
+    layui.use('table', function() {
+        var table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#goods'
+            ,url: '/getGoodList' //数据接口
+            ,page: true //开启分页
+            ,cols: [
+                [ //表头
+                {field: 'id', title: 'ID',  sort: true, fixed: 'left'}
+                ,{field: 'name', title: '商品名'}
+                ,{field: 'price', title: '价格',  sort: true}
+                    ,{field: 'action',title:'数量',templet:function (data) {
+                        var inputs = "<div style='text-align: center' >" +
+                            "<input class='layui-input' type='number' min='0' id='input"+data.id+"'></button>";
+                        return inputs;
+                    }
+                }
+                ,{field: 'action',title:'操作',templet:function (data) {
+                        var buttons = "<div style='text-align: center' >" +
+                            "<button class='layui-btn layui-btn-xs layui-btn-normal' onclick='addToCart("+data.id+")'>添加</button>";
+                        return buttons;
+                    }
+                }
+            ]
+            ]
+        });
+    });
+
+    function addToCart(id) {
+        $.get("/addToCart?id="+id+"&num="+$("#input"+id).val(),function () {
+            console.log("添加购物车成功");
+        })
+    }
+
+
+</script>
+</html>

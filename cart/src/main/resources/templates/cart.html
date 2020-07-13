@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>购物车</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+</head>
+<body>
+<table id="cart"></table>
+<script src="/static/layui/layui.js"></script>
+<script src="/static/jquery/jquery-2.1.1.min.js"></script>
+<script>
+    layui.use('table', function() {
+        var table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#cart'
+            ,url: '/getCart' //数据接口
+            ,page: true //开启分页
+            ,cols: [
+                [ //表头
+                    {field: 'action',title:'商品名',templet:function (data) {
+                        var divs = "<div class='layui-row' style='text-align: center' >" +
+                            "<div class='layui-col-md9' id='name"+data.id+"'>"+data.name+"</div>";
+                        return divs;
+                    }
+                }
+                    ,{field: 'action',title:'数量',templet:function (data) {
+                        var inputs = "<div style='text-align: center' >" +
+                            "<input class='layui-input' onchange='updateTotalPrice("+data.id+")' value='"+data.num+"' type='number' min='0' id='input"+data.id+"'></button>";
+                        return inputs;
+                    }
+                }
+                ,{field: 'action',title:'单价',templet:function (data) {
+                        var divs = "<div class='layui-row' style='text-align: center' >" +
+                            "<div class='layui-col-md9' id='price"+data.id+"'>"+data.price+"</div>";
+                        return divs;
+                    }
+                }
+                    ,{field: 'action',title:'总价',templet:function (data) {
+                        var divs = "<div class='layui-row' style='text-align: center' >" +
+                            "<div class='layui-col-md9' id='totalPrice"+data.id+"'>"+parseFloat(data.num * data.price).toFixed(1)+"</div>";
+                        return divs;
+                    }
+                }
+                    ,{field: 'action',title:'操作',templet:function (data) {
+                        var buttons = "<div style='text-align: center' >" +
+                            "<button class='layui-btn layui-btn-xs layui-btn-normal' onclick='updateCart("+data.id+")'>修改</button>"+
+                            "<button class='layui-btn layui-btn-xs layui-btn-danger' onclick='deleteGood("+data.id+")'>删除</button>"+
+                                "</div>";
+                        return buttons;
+                    }
+                }
+                ]
+            ]
+        });
+    });
+    
+    function updateCart(id) {
+        let num = parseInt($("#input"+id).val());
+        $.get("updateCart?id="+id+"&num="+num,function () {
+            location.reload();
+        })
+    }
+    
+    function deleteGood(id) {
+        $.get("deleteGood?id="+id,function () {
+            location.reload();
+        })
+    }
+
+    function updateTotalPrice(id) {
+        let num = parseInt($("#input"+id).val());
+        let price = parseFloat($("#price"+id).html()).toFixed(1);
+        $("#totalPrice"+id).html(num*price);
+    }
+</script>
+</body>
+</html>
