@@ -2,9 +2,7 @@ package com.bosssoft.cart.controller;
 
 import com.bosssoft.cart.dto.GoodDTO;
 import com.bosssoft.cart.service.CartService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -15,6 +13,7 @@ import javax.servlet.http.HttpSession;
  * @description 购物车controller，转发相关请求
  */
 @RestController
+
 public class CartController {
 
     @Resource
@@ -43,7 +42,7 @@ public class CartController {
         return cartService.getCart(page,limit,session);
     }
 
-    @GetMapping("/deleteGood")
+    @DeleteMapping("/deleteGood")
     public void deleteGood(@RequestParam("id") Integer id,
                            HttpSession session)
     {
@@ -56,6 +55,12 @@ public class CartController {
                            HttpSession session)
     {
         cartService.updateCart(id,num,session);
+    }
+
+    @PutMapping("/submitOrder")
+    public void submitOrder(HttpSession session)
+    {
+        cartService.submitOrder(session);
     }
 
 }

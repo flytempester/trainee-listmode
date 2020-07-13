@@ -3,6 +3,9 @@ package com.bosssoft.cart.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.HashMap;
 
 /**
@@ -13,7 +16,7 @@ import java.util.HashMap;
 @Getter
 @Setter
 public class Cart {
-    private Integer id;
+    private int id;
     private HashMap<Integer,Good> goods;
 
     public Cart() {

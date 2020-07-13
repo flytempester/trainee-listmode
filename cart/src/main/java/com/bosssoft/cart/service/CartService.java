@@ -1,9 +1,12 @@
 package com.bosssoft.cart.service;
 
 import com.bosssoft.cart.dao.GoodMapper;
+import com.bosssoft.cart.dao.OrderMapper;
 import com.bosssoft.cart.dto.GoodDTO;
 import com.bosssoft.cart.entity.Cart;
 import com.bosssoft.cart.entity.Good;
+import com.bosssoft.cart.entity.Order;
+import com.sun.org.apache.xpath.internal.operations.Or;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,6 +22,8 @@ import java.util.*;
 public class CartService {
     @Resource
     private GoodMapper goodMapper;
+    @Resource
+    private OrderMapper orderMapper;
 
     public GoodDTO getGoodList(Integer page,Integer limit){
         List<Good> allGoods = goodMapper.selectAll();
@@ -32,21 +37,24 @@ public class CartService {
     }
 
     public void addToCart(Integer gid, Integer num, HttpSession session) {
-        Cart cart = (Cart)session.getAttribute("cart");
-        if(cart == null)
-        {
-            cart = new Cart();
+        if (num > 0){
+            Cart cart = (Cart)session.getAttribute("cart");
+            if(cart == null)
+            {
+                cart = new Cart();
+            }
+            HashMap<Integer, Good> goods = cart.getGoods();
+            Good good = goodMapper.selectByPrimaryKey(gid);
+            if(goods.get(gid) != null) {
+                Good oldGood = goods.get(gid);
+                good.setNum(num + oldGood.getNum());
+                goods.put(gid,good);
+            }else {
+                good.setNum(num);
+            }
+            goods.putIfAbsent(gid,good);
+            session.setAttribute("cart",cart);
         }
-        HashMap<Integer, Good> goods = cart.getGoods();
-        Good good = goodMapper.selectByPrimaryKey(gid);
-        if(goods.get(gid) != null) {
-            Good oldGood = goods.get(gid);
-            good.setNum(num + oldGood.getNum());
-            goods.put(gid,good);
-        }
-        good.setNum(num);
-        goods.putIfAbsent(gid,good);
-        session.setAttribute("cart",cart);
     }
 
     public GoodDTO getCart(Integer page,Integer limit,HttpSession session) {
@@ -74,5 +82,19 @@ public class CartService {
         HashMap<Integer, Good> goods = cart.getGoods();
         Good good = goods.get(id);
         good.setNum(num);
+    }
+
+    public void submitOrder(HttpSession session) {
+        Cart cart = (Cart) session.getAttribute("cart");
+        cart.setId(cart.getId()+1);
+        HashMap<Integer, Good> goods = cart.getGoods();
+        Set<Integer> gids = goods.keySet();
+        for (Integer gid : gids) {
+            Order order = new Order();
+            order.setCartId(cart.getId());
+            order.setGoodId(gid);
+            order.setNum(goods.get(gid).getNum());
+            orderMapper.insert(order);
+        }
     }
 }

@@ -6,7 +6,12 @@
     <link rel="stylesheet" href="/static/layui/css/layui.css">
 </head>
 <body>
+<button class="layui-btn" onclick="window.location.href='/goods'">转到商品页面</button>
 <table id="cart"></table>
+<div style="text-align: center;">
+    <button onclick="submitOrder()" class="layui-btn layui-btn-normal">提交订单</button>
+</div>
+
 <script src="/static/layui/layui.js"></script>
 <script src="/static/jquery/jquery-2.1.1.min.js"></script>
 <script>
@@ -28,7 +33,7 @@
                 }
                     ,{field: 'action',title:'数量',templet:function (data) {
                         var inputs = "<div style='text-align: center' >" +
-                            "<input class='layui-input' onchange='updateTotalPrice("+data.id+")' value='"+data.num+"' type='number' min='0' id='input"+data.id+"'></button>";
+                            "<input class='layui-input' onchange='updateTotalPrice("+data.id+")' value='"+data.num+"' type='number' min='1' id='input"+data.id+"'></button>";
                         return inputs;
                     }
                 }
@@ -59,21 +64,50 @@
     
     function updateCart(id) {
         let num = parseInt($("#input"+id).val());
-        $.get("updateCart?id="+id+"&num="+num,function () {
-            location.reload();
+        $.ajax({
+            method:"get",
+            url:"/updateCart",
+            data:{
+                id:id,
+                num:num
+            },
+            success:function () {
+                location.reload();
+            }
         })
     }
     
     function deleteGood(id) {
-        $.get("deleteGood?id="+id,function () {
-            location.reload();
+        $.ajax({
+            method:"delete",
+            url:"/deleteGood",
+            data:{
+                id:id
+            },
+            success:function () {
+                location.reload();
+            }
         })
+
     }
 
     function updateTotalPrice(id) {
         let num = parseInt($("#input"+id).val());
-        let price = parseFloat($("#price"+id).html()).toFixed(1);
-        $("#totalPrice"+id).html(num*price);
+        let price = parseFloat($("#price"+id).html());
+        $("#totalPrice"+id).html(parseFloat(num*price).toFixed(1));
+    }
+
+    function submitOrder() {
+        $.ajax({
+            method:"put",
+            url:"/submitOrder",
+            success:function () {
+                layer.open({
+                    type: 0,
+                    content: '订单提交成功' //这里content是一个普通的String
+                });
+            }
+        })
     }
 </script>
 </body>

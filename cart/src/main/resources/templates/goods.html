@@ -28,7 +28,7 @@
                 ,{field: 'price', title: '价格',  sort: true}
                     ,{field: 'action',title:'数量',templet:function (data) {
                         var inputs = "<div style='text-align: center' >" +
-                            "<input class='layui-input' type='number' min='0' id='input"+data.id+"'></button>";
+                            "<input class='layui-input' type='number' min='1' id='input"+data.id+"'></button>";
                         return inputs;
                     }
                 }
@@ -44,11 +44,19 @@
     });
 
     function addToCart(id) {
-        $.get("/addToCart?id="+id+"&num="+$("#input"+id).val(),function () {
-            layer.open({
-                type: 0,
-                content: '商品添加成功' //这里content是一个普通的String
-            });
+        $.ajax({
+            method:"get",
+            url:"/addToCart",
+            data:{
+                id:id,
+                num:$("#input"+id).val()
+            },
+            success:function () {
+                layer.open({
+                    type: 0,
+                    content: '商品添加成功' //这里content是一个普通的String
+                });
+            }
         })
     }
 
