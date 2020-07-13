@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author 张东海
  * @date 2020/7/9
- * @description 商品信息传输类，用于传输给前端表格呈现
+ * @description 商品信息传输类，用于传输给前端表格进行数据呈现
  */
 @Getter
 public class GoodDTO {

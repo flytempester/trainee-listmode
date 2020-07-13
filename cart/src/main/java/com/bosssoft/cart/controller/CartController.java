@@ -20,8 +20,8 @@ public class CartController {
     private CartService cartService;
 
     @GetMapping("/getGoodList")
-    public GoodDTO getGoodList(@RequestParam("page") Integer page,
-                               @RequestParam("limit") Integer limit)
+    public GoodDTO getGoodList(@RequestParam(value = "page",defaultValue = "1") Integer page,
+                               @RequestParam(value = "limit",defaultValue = "10") Integer limit)
     {
 
         return cartService.getGoodList(page,limit);
