@@ -45,7 +45,10 @@
 
     function addToCart(id) {
         $.get("/addToCart?id="+id+"&num="+$("#input"+id).val(),function () {
-            console.log("添加购物车成功");
+            layer.open({
+                type: 0,
+                content: '商品添加成功' //这里content是一个普通的String
+            });
         })
     }
 
